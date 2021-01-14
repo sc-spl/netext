@@ -3424,8 +3424,9 @@ namespace NetExt.Shim
                 {
                     if (!Directory.Exists(folderToSave))
                     {
-                        Exports.WriteLine("Folder '{0}' does not exist. Please choose an existing folder.", folderToSave);
-                        return HRESULTS.E_FAIL;
+                        Directory.CreateDirectory(folderToSave);
+                        //Exports.WriteLine("Folder '{0}' does not exist. Please choose an existing folder.", folderToSave);
+                        //return HRESULTS.E_FAIL;
                     }
                     string fileName = Path.Combine(folderToSave, mod.Name);
 
