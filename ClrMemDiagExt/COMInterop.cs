@@ -3487,9 +3487,9 @@ namespace NetExt.Shim
             }
 
             if (DebugApi.IsTaget64Bits)
-                Exports.WriteLine("{0}", "Address                      Module Version Company Name       Debug Mode Type Module Binary");
+                Exports.WriteLine("{0}", "Address                                               Module Version Company Name                             Debug Mode Type Module Binary");
             else
-                Exports.WriteLine("{0}", "Address              Module Version Company Name       Debug Mode Type Module Binary");
+                Exports.WriteLine("{0}", "Address                                               Module Version Company Name                             Debug Mode Type Module Binary");
 
             int i = 0;
             foreach (var mod in modules)
@@ -3500,7 +3500,10 @@ namespace NetExt.Shim
                    fileName = mod.FullPath;
                 else
                    fileName = mod.Name;
-                Exports.WriteLine(" {0,25} {1,-25} {2,-3}  {3,-3} {4}", mod.VersionInfo, mod.CompanyName, (int)mod.ClrDebugType >= 4 ? "Yes" : "No", mod.IsClr ? "CLR" : "NAT", fileName);
+
+                var versionString = TruncateString(mod.ProductVersion, 40) ?? mod.VersionInfo.ToString();
+
+                Exports.WriteLine(" {0,50} {1,-40} {2,-4}  {3,-3} {4}", versionString, mod.CompanyName, (int)mod.ClrDebugType >= 4 ? "Yes" : "No", mod.IsClr ? "CLR" : "NAT", fileName);
                 i++;
                 if (DebugApi.CheckControlC())
                     return HRESULTS.S_OK;
@@ -3509,6 +3512,21 @@ namespace NetExt.Shim
             Exports.WriteLine("");
             Exports.WriteLine("{0} module(s) listed, {1} skipped by the filters", i, Module.Modules.Count - i);
             return HRESULTS.S_OK;
+        }
+
+        public static string TruncateString(string str, int maxLength)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            if (str.Length > maxLength)
+            {
+                return str.Substring(0, maxLength) + "...";
+            }
+
+            return str;
         }
 
         private static bool isExeCreated = false;
